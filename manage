@@ -977,7 +977,7 @@ case "${COMMAND}" in
       remove_taa
     ;;
   build)
-      docker buildx build --platform linux/amd64,linux/arm64 $(initDockerBuildArgs) -t tgrid-network .
+      docker buildx build --platform linux/arm64 $(initDockerBuildArgs) -t tgrid-network .
     ;;
   rebuild)
       docker build --no-cache --progress plain $(initDockerBuildArgs) -t tgrid-network-base .
