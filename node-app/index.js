@@ -59,7 +59,7 @@ function generateLog() {
     );
     
     // Generate next log after random time (1-5 seconds)
-    const nextInterval = Math.floor(Math.random() * 4000) + 1000; // Random between 1-5 seconds
+    const nextInterval = Math.floor(Math.random() * 9000) + 1000; // Random between 1-5 seconds
     setTimeout(generateLog, nextInterval);
 }
 

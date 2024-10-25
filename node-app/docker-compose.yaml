@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  logger:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/usr/src/app/logs
+    restart: unless-stopped
+    platform: linux/arm64

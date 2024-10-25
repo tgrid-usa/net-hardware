@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trustgrid Ledger Status</title>
+    <title>Trustgrid Network</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,7 +42,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Trustgrid Ledger Status</h1>
+        <h1>Trustgrid Network</h1>
         <div id="logs"></div>
     </div>
 
@@ -65,8 +65,16 @@
 
         // Fetch logs every 2 seconds
         setInterval(fetchLogs, 2000);
+        setInterval(scroll, 2000);
         // Initial fetch
         fetchLogs();
+        scroll();
+
+        function scroll(){
+            const h = window.innerHeight
+            console.log("Hight: ",h)
+             window.scrollTo(h)
+        }
     </script>
 </body>
 </html>
