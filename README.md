@@ -1,3 +1,9 @@
+## steps to run
+
+  $ docker build -t trustgrid-network .
+
+  $ docker-compose -d up
+
 ## added in inbound and outbound rule network setting -  9701-9708 port of node running inside network
 
 give proper permission to file 
