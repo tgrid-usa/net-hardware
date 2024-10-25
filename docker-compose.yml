@@ -1,7 +1,7 @@
 version: '3'
 services:
   webserver:
-    image: tgrid-network
+    image: akshayktg/trustgrid-network
     command: bash -c 'sleep 10 && ./scripts/start_webserver.sh'
     ports:
       - "9000:8000"
@@ -18,7 +18,7 @@ services:
       - tgrid
 
   node1:
-    image: tgrid-network
+    image: akshayktg/trustgrid-network
     command: ./scripts/start_node.sh 1
     networks:
       - tgrid
@@ -31,7 +31,7 @@ services:
       - RUST_LOG=debug
 
   node2:
-    image: tgrid-network
+    image: akshayktg/trustgrid-network
     command: ./scripts/start_node.sh 2
     networks:
       - tgrid
@@ -44,7 +44,7 @@ services:
       - RUST_LOG=debug
 
   node3:
-    image: tgrid-network
+    image: akshayktg/trustgrid-network
     command: ./scripts/start_node.sh 3
     networks:
       - tgrid
@@ -57,7 +57,7 @@ services:
       - RUST_LOG=debug
 
   node4:
-    image: tgrid-network
+    image: akshayktg/trustgrid-network
     command: ./scripts/start_node.sh 4
     networks:
       - tgrid
