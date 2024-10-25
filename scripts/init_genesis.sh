@@ -1,14 +1,14 @@
 #!/bin/bash
-
 set -e
 
-if [ ! -z "$IPS" ]; then
-    echo von_generate_transactions -s "$IPS" -n "$NODE_NUM"
-    von_generate_transactions -s "$IPS" -n "$NODE_NUM"
-elif [ ! -z "$IP" ]; then
-    echo von_generate_transactions -i "$IP" -n "$NODE_NUM"
-    von_generate_transactions -i "$IP" -n "$NODE_NUM"
+# Create ledger directory if it doesn't exist
+mkdir -p /home/indy/ledger
+
+# Check if genesis files already exist
+if [ ! -f /home/indy/ledger/pool_transactions_genesis ]; then
+    echo "Ledger does not exist - Creating..."
+    python3 /home/indy/scripts/generate_genesis.py
 else
-    echo von_generate_transactions -n "$NODE_NUM"
-    von_generate_transactions -n "$NODE_NUM"
+    echo "Genesis files already exist"
 fi
+ 

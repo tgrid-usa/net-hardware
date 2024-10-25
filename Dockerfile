@@ -1,23 +1,93 @@
-FROM bcgovimages/von-image:node-1.12-6
+FROM ubuntu:20.04
 
-ENV LOG_LEVEL ${LOG_LEVEL:-info}
-ENV RUST_LOG ${RUST_LOG:-warning}
+ENV DEBIAN_FRONTEND=noninteractive
+ENV HOME="/home/indy"
+ENV LOG_LEVEL=info
+ENV RUST_LOG=warning
+ 
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y \
+        git \
+        wget \
+        python3 \
+        python3-pip \
+        python3-nacl \
+        apt-transport-https \
+        ca-certificates \
+        pkg-config \
+        cmake \
+        libssl-dev \
+        libsodium-dev \
+        libzmq3-dev \
+        libsqlite3-dev \
+        sqlite3 \
+        vim \
+        sudo \
+        curl \
+        build-essential
+ 
+# Create indy user
 
-ADD config ./config
-ADD server/requirements.txt server/
+RUN useradd -ms /bin/bash -u 1001 indy && \
+    usermod -a -G sudo indy && \
+    echo "indy ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+ 
+WORKDIR $HOME
+ 
+# Install Rust and build libindy
 
-# Here we need to upgrade pip in order to intsall IndyVDR binary
-# However, this causes issue with 'plenum' package (for example: https://github.com/bcgov/von-network/issues/238)
-# So we need to downgrade to pip 9.0.3 after requirements install
-RUN pip3 install -U pip && \
-    pip install --no-cache-dir -r server/requirements.txt && \
-    python -m pip install pip==9.0.3
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.57.0 -y && \
+    . $HOME/.cargo/env && \
+    git clone https://github.com/hyperledger/indy-sdk.git && \
+    cd indy-sdk/libindy && \
+    $HOME/.cargo/bin/cargo build --release && \
+    cp target/release/libindy.so /usr/lib/ && \
+    cp target/release/libindy.so /usr/local/lib/ && \
+    ldconfig
+ 
+# Install Python packages
 
-ADD --chown=indy:indy indy_config.py /etc/indy/
-ADD --chown=indy:indy . $HOME
-
-RUN chmod +x scripts/init_genesis.sh
+RUN pip3 install --upgrade pip && \
+    pip3 install \
+        python3-indy \
+        asyncio \
+        aiohttp \
+        base58 \
+        prompt_toolkit \
+        requests
+ 
+# Create required directories
 
 RUN mkdir -p \
-    $HOME/cli-scripts \
-    && chmod -R ug+rw $HOME/cli-scripts
+    $HOME/.indy-cli/networks \
+    $HOME/.indy_client/wallet \
+    $HOME/.indy_client/pool/sandbox \
+    $HOME/ledger \
+    $HOME/config \
+    $HOME/server \
+    $HOME/scripts
+ 
+# Copy project files
+
+COPY --chown=indy:indy config $HOME/config
+COPY --chown=indy:indy server $HOME/server
+COPY --chown=indy:indy scripts $HOME/scripts
+COPY --chown=indy:indy indy_config.py /etc/indy/
+ 
+# Set permissions
+
+RUN chown -R indy:indy $HOME && \
+    chmod -R ug+rwx $HOME/scripts && \
+    chmod -R ug+rwx $HOME/.indy-cli && \
+    chmod -R ug+rwx $HOME/.indy_client && \
+    chmod +x $HOME/scripts/*.sh && \
+    chmod +x $HOME/scripts/*.py
+ 
+USER indy
+
+WORKDIR $HOME
+ 
+EXPOSE 8000 9701 9702 9703 9704 9705 9706 9707 9708
+
+ 

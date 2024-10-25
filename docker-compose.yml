@@ -1,105 +1,21 @@
 version: '3'
 services:
-  #
-  # Client
-  #
-  client:
-    image: tgrid-network
-    command: ./scripts/start_client.sh
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - RUST_LOG=${RUST_LOG}
-    networks:
-      - tgrid
-    volumes:
-      - client-data:/home/indy/.indy_client
-      - ./tmp:/tmp
-
-  #
-  # Webserver
-  #
   webserver:
     image: tgrid-network
     command: bash -c 'sleep 10 && ./scripts/start_webserver.sh'
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
-      - GENESIS_URL=${GENESIS_URL}
-      - LEDGER_SEED=${LEDGER_SEED}
-      - LEDGER_CACHE_PATH=${LEDGER_CACHE_PATH}
-      - MAX_FETCH=${MAX_FETCH:-50000}
-      - RESYNC_TIME=${RESYNC_TIME:-120}
-      - POOL_CONNECTION_ATTEMPTS=${POOL_CONNECTION_ATTEMPTS:-5}
-      - POOL_CONNECTION_DELAY=${POOL_CONNECTION_DELAY:-10}
-      - REGISTER_NEW_DIDS=${REGISTER_NEW_DIDS:-True}
-      - LEDGER_INSTANCE_NAME=${LEDGER_INSTANCE_NAME:-TrustGrid}
-      - WEB_ANALYTICS_SCRIPT=${WEB_ANALYTICS_SCRIPT}
-      - INFO_SITE_TEXT=${INFO_SITE_TEXT}
-      - INFO_SITE_URL=${INFO_SITE_URL}
-      - INDY_SCAN_URL=${INDY_SCAN_URL}
-      - INDY_SCAN_TEXT=${INDY_SCAN_TEXT}
-    networks:
-      - tgrid
     ports:
-      - ${WEB_SERVER_HOST_PORT:-9000}:8000
+      - "9000:8000"
     volumes:
       - ./config:/home/indy/config
       - ./server:/home/indy/server
       - webserver-cli:/home/indy/.indy-cli
       - webserver-ledger:/home/indy/ledger
-
-  #
-  # Synchronization test
-  #
-  synctest:
-    image: tgrid-network
-    command: ./scripts/start_synctest.sh
     environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
+      - LOG_LEVEL=debug
+      - RUST_LOG=debug
+      - LEDGER_SEED=000000000000000000000000Trustee1
     networks:
       - tgrid
-    ports:
-      - ${WEB_SERVER_HOST_PORT:-9000}:8000
-    volumes:
-      - ./config:/home/indy/config
-      - ./server:/home/indy/server
-      - webserver-cli:/home/indy/.indy-cli
-      - webserver-ledger:/home/indy/ledger
-
-  #
-  # Nodes
-  #
-  nodes:
-    image: tgrid-network
-    command: ./scripts/start_nodes.sh
-    networks:
-      - tgrid
-    ports:
-      - 9701:9701
-      - 9702:9702
-      - 9703:9703
-      - 9704:9704
-      - 9705:9705
-      - 9706:9706
-      - 9707:9707
-      - 9708:9708
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
-    volumes:
-      - nodes-data:/home/indy/ledger
 
   node1:
     image: tgrid-network
@@ -107,16 +23,12 @@ services:
     networks:
       - tgrid
     ports:
-      - 9701:9701
-      - 9702:9702
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
+      - "9701-9702:9701-9702"
     volumes:
       - node1-data:/home/indy/ledger
+    environment:
+      - LOG_LEVEL=debug
+      - RUST_LOG=debug
 
   node2:
     image: tgrid-network
@@ -124,16 +36,12 @@ services:
     networks:
       - tgrid
     ports:
-      - 9703:9703
-      - 9704:9704
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
+      - "9703-9704:9703-9704"
     volumes:
       - node2-data:/home/indy/ledger
+    environment:
+      - LOG_LEVEL=debug
+      - RUST_LOG=debug
 
   node3:
     image: tgrid-network
@@ -141,16 +49,12 @@ services:
     networks:
       - tgrid
     ports:
-      - 9705:9705
-      - 9706:9706
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
+      - "9705-9706:9705-9706"
     volumes:
       - node3-data:/home/indy/ledger
+    environment:
+      - LOG_LEVEL=debug
+      - RUST_LOG=debug
 
   node4:
     image: tgrid-network
@@ -158,26 +62,21 @@ services:
     networks:
       - tgrid
     ports:
-      - 9707:9707
-      - 9708:9708
-    environment:
-      - IP=${IP}
-      - IPS=${IPS}
-      - DOCKERHOST=${DOCKERHOST}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - RUST_LOG=${RUST_LOG}
+      - "9707-9708:9707-9708"
     volumes:
       - node4-data:/home/indy/ledger
+    environment:
+      - LOG_LEVEL=debug
+      - RUST_LOG=debug
 
 networks:
   tgrid:
 
 volumes:
-  client-data:
   webserver-cli:
   webserver-ledger:
   node1-data:
   node2-data:
   node3-data:
   node4-data:
-  nodes-data:
+ 
